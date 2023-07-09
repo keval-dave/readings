@@ -1,0 +1,82 @@
+good read - https://www.gentlydownthe.stream/
+
+
+
+What is Kafka?
+- Kafka is event streaming platfrom.
+- 3 key functionalities
+- scalable
+- fault tolerant - auto fix issue
+- reliable - message delivery is fixed
+- publish and subscribe event
+- store event as long as you want
+- process and analyze event
+- What is event?
+- records that something happen in world
+- key, value, & timestamp
+- What is event stream?
+- Records the history of what has happened in the world as a sequence of events.
+- A stream thus represents both the past and the present: as we go from today to tomorrow—or from one millisecond to the next—new events are constantly being appended to the history.
+- What is table?
+- represents the state of world ar perticular point in time (typically now)
+- Stream vs Table in Kafka
+- differe in a few ways. Mainly whether contents can be changed.
+- streams
+- immutable data
+- only appending is allowed
+- persistent, durable and fault tolerant
+- tables
+- mutable data
+- new event can be inserted & existing data can be changed
+- Kafka topics
+- Topics belong to Kafka’s storage layer and are probably the most well-known concept of Kafka. They’re where your events are being durably stored for as long as you want, similar to a file in a distributed filesystem.
+-  The machines that store and serve the data are called Kafka brokers, which are the server component of Kafka
+- How kafka stores data
+- there is log directory in file system in broker
+- two files
+- 1. index
+- 2. actual data
+- the log is always persistent. Messages are immediately written to the filesystem when they are received. Messages are not deleted when they are read but retained with some configurable SLA (say a few days or a week). This allows usage in situations where the consumer of data may need to reload data.
+- Storage formats - ser/dser
+- Events are serialized when they are written to a topic and deserialized when they are read.
+- These operation only done by client i.e producing/consuming applications
+-  Kafka brokers, on the other hand, are agnostic to the serialization format or “type” of a stored event. All they see is a pair of raw bytes for event key and event value (<byte[], byte[]> in Java notation) coming in when being written, and going out when being read.
+- Broker being dumb is pretty smart because this design allows broker to scale much better than tradinition messaging
+- ser/dser takes lots of CPU cycle
+- Partition
+- it is just specific directory in the file system in the broker
+- Kafka topics are partitioned, meaning a topic is spread over a number of “buckets” located on different brokers.
+- partitions are the most fundamental concept in Kafka as their importance goes well beyond the storage layer: they enable Kafka’s scalability, elasticity, and fault tolerance across both the storage and processing layers.
+- How to pick right number of partitions [https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster/] 
+- topic partition is the unit of parallelism in Kafka
+- Key things to consider
+- More partitions lead to higher throughput
+- More partitions may increase unavailability - if number of partitions are in range thousands
+- More partitions may require more memory in the client
+- producer accumulates data until memory throshold or time threshold reached. if we've too many parition this could increase memory
+- same is applicable for consumer
+- How to partition your events: Same event key to same partition
+- what are the reasons same event key may end up in diff. partition?
+- Topic config. - someone changed the number of partitions of a topic. In this scenario default paritition function now assigns diff. target parition
+- Poducer config. - producer uses a custom partitioning function
+- to avoid above issue try to over-partition a topic to reduce change of repartition
+- if in doubt, use 30 partitions per topic. This is a good number because (a) it is high enough to cover some really high-throughput requirements, (b) it is low enough that you will not hit the limit anytime soon of how many partitions a single broker can handle, even if you create many topics in your Kafka cluster, and (c) it is a highly composite number as it is evenly divisible by 1, 2, 3, 5, 6, 10, 15, and 30. This benefits the processing layer because it results in a more even workload distribution across application instances when horizontally scaling out (adding app instances) and scaling in (removing instances). Since Kafka supports hundreds of thousands of partitions in a cluster, this over-partitioning strategy is a safe approach for most users.
+- Consumer Group [https://dev.to/de_maric/what-is-a-consumer-group-in-kafka-49il]
+		- Logical grouping of consumers to achieve parallelism
+- why it was introduced?
+- send a message to a targeted group of consumers
+- broadcast the message to all the consumers
+- above scenarios acheived by consumer group
+- rebalance
+-
+- How to write consumers
+-
+
+Ref:
+- https://dev.to/de_maric/what-is-a-consumer-group-in-kafka-49il
+- https://www.gentlydownthe.stream/
+- https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster/
+- https://www.confluent.io/blog/kafka-streams-tables-part-1-event-streaming/
+- https://www.confluent.io/blog/schemas-contracts-compatibility/
+- https://engineering.linkedin.com/kafka/benchmarking-apache-kafka-2-million-writes-second-three-cheap-machines
+- https://dev.to/de_maric/what-is-a-consumer-group-in-kafka-49il
