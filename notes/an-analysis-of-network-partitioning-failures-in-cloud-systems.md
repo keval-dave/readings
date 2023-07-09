@@ -3,6 +3,8 @@ geometry: margin=3cm
 title: "Notes for ``An Analysis of Network-Partitioning Failures in Cloud Systems''"
 ---
 
+
+
 # Open Questions About System Failures
 
 - Failure Impact
